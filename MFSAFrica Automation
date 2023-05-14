@@ -1,0 +1,131 @@
+package code1;
+
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class TestAutomation {
+
+	static WebDriver driver;
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	WebDriverManager.chromedriver().setup();
+		
+		ChromeDriver driver = new ChromeDriver();
+		
+		driver.get("http://automationpractice.pl/index.php");
+		
+		
+		//The account wasn't registered so I had to create an account to be able to Login successfully
+		
+		// Find the email address field and input the email
+		// Account registration section
+        WebElement emailInput = driver.findElement(By.id("email_create"));
+        emailInput.sendKeys("testautomationmfs@gmail.com");
+        
+        /* Click on Create an account
+         *  driver.findElement(By.id("SubmitCreate")).click();
+         *  
+         *     driver.findElement(By.id("SubmitCreate")).click();
+        
+        // Register the account using the provided credentials
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("customer_firstname")));
+        
+        WebElement firstNameInput = driver.findElement(By.id("customer_firstname"));
+        firstNameInput.sendKeys("Latifat");
+        
+        WebElement lastNameInput = driver.findElement(By.id("customer_lastname"));
+        lastNameInput.sendKeys("Abdullahi");
+        
+        WebElement usernameInput = driver.findElement(By.id("email"));
+        usernameInput.clear();
+        usernameInput.sendKeys("testautomationmfs@gmail.com");
+        
+        WebElement passwordInput = driver.findElement(By.id("passwd"));
+        passwordInput.sendKeys("TestAutomation@123");
+        
+        // Submit the registration form
+        driver.findElement(By.id("submitAccount")).click();
+        
+        // Wait for the registration process to complete and print success message
+        wait.until(ExpectedConditions.titleContains("My account - My Store"));
+        System.out.println("Account registration successful!");
+        
+        // Close the browser
+        driver.quit();
+         */
+
+
+		
+		driver.manage().window().maximize();
+		driver.findElement(By.className("login")).click();
+        driver.findElement(By.id("email")).sendKeys("testautomationmfs@gmail.com");
+        driver.findElement(By.id("passwd")).sendKeys("TestAutomation@123");
+        driver.findElement(By.id("SubmitLogin")).click();
+        
+        
+     // Get the label and price of items under the popular category
+        WebElement popularCategory = driver.findElement(By.className("homefeatured"));
+        List<WebElement> popularItems = popularCategory.findElements(By.className("product-container"));
+        Map<Double, String> itemPriceMap = new TreeMap<>();
+        for (WebElement item : popularItems) {
+            WebElement priceElement = item.findElement(By.className("price"));
+            String priceText = priceElement.getText().replace("$", "");
+            Double price = Double.parseDouble(priceText);
+            String label = item.findElement(By.className("product-name")).getText();
+            itemPriceMap.put(price, label);
+            
+            // Print the items sorted by price
+            System.out.println("Popular items sorted by price:");
+            for (Map.Entry<Double, String> entry : itemPriceMap.entrySet()) {
+                System.out.println(entry.getValue() + " - $" + entry.getKey());
+            }
+            
+            // Navigate to the evening dresses section and apply filters
+            driver.findElement(By.linkText("Women")).click();
+            driver.findElement(By.linkText("Dresses")).click();
+            driver.findElement(By.linkText("Evening Dresses")).click();
+            WebElement catalog = driver.findElement(By.className("category-products"));
+            WebElement filterForm = driver.findElement(By.id("layered_form"));
+            WebElement sizeM = filterForm.findElement(By.xpath("//input[@name='layered_id_attribute_group_2']"));
+            sizeM.click();
+            WebElement colorPink = filterForm.findElement(By.xpath("//input[@name='layered_id_attribute_group_24']"));
+            colorPink.click();
+            WebElement priceRange = filterForm.findElement(By.id("layered_price_range"));
+            WebElement rangeMin = priceRange.findElement(By.className("price-range-min"));
+            WebElement rangeMax = priceRange.findElement(By.className("price-range-max"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", catalog);
+            WebDriverWait1 wait = new WebDriverWait1(driver, 10);
+            wait.until(ExpectedConditions.attributeToBe(rangeMin, "value", "50.00"));
+            wait.until(ExpectedConditions.attributeToBe(rangeMax, "value", "52.28"));
+            
+            // Click on the More button for the first matching item and add to cart
+            List<WebElement> items = catalog.findElements(By.className("product-container"));
+            WebElement itemToAdd = null;
+            for (WebElement item1 : items) {
+                String itemPriceText = item.findElement(By.className("price")).getText().replace("$", "");
+                Double itemPrice = Double.parseDouble(itemPriceText);
+                if (itemPrice >= 50.00 && itemPrice <= 52.28) {
+                    itemToAdd = item;
+                    break;
+                }
+            }
+            WebElement addToCartButton = itemToAdd.findElement(By.className("ajax_add_to_cart_button"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true)");
+        }
+	
+	}
+}
